@@ -1,13 +1,13 @@
 # Azure subscription vars
-subscription_id = "e7a256dc-769a-421c-9f8e-e283ed3cbefa"
-client_id = "1eec5be1-163a-496b-b1c0-a10b6dbdfe12"
+subscription_id = "8f6db795-24df-4745-8066-e8241a289b77"
+client_id = ""
 client_secret = ""
-tenant_id = "f958e84a-92b8-439f-a62d-4f45996b6d07"
+tenant_id = "84e1d1c4-fa62-418b-8f22-c3104cbf50f0"
 
 # Resource Group/Location
 location = "West US"
 resource_group = "Azuredevops"
-application_type = "Project4"
+application_type = "azvProject4"
 
 # Network
 virtual_network_name = "Project4-net"
