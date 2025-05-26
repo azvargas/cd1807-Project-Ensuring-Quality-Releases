@@ -8,12 +8,6 @@ provider "azurerm" {
 
 terraform {
   backend "azurerm" {
-    use_oidc             = true
-    use_azuread_auth     = true
-    tenant_id            = "84e1d1c4-fa62-418b-8f22-c3104cbf50f0"
-    storage_account_name = "tfstate45611955"
-    container_name       = "tfstate"
-    key                  = "test.terraform.tfstate"
   }
 }
 
