@@ -5,19 +5,13 @@ provider "azurerm" {
   client_secret   = "${var.client_secret}"
   features {}
 }
-terraform {
-  backend "azurerm" {
-    storage_account_name = ""
-    container_name       = ""
-    key                  = ""
-    access_key           = ""
-  }
-}
+
 module "resource_group" {
   source               = "../../modules/resource_group"
   resource_group       = "${var.resource_group}"
   location             = "${var.location}"
 }
+
 module "network" {
   source               = "../../modules/network"
   address_space        = "${var.address_space}"
@@ -37,7 +31,9 @@ module "nsg-test" {
   resource_group   = "${module.resource_group.resource_group_name}"
   subnet_id        = "${module.network.subnet_id_test}"
   address_prefix_test = "${var.address_prefix_test}"
+  address_prefix_for_nsg = "${var.address_prefix_for_nsg}"
 }
+
 module "appservice" {
   source           = "../../modules/appservice"
   location         = "${var.location}"
@@ -51,4 +47,14 @@ module "publicip" {
   application_type = "${var.application_type}"
   resource_type    = "publicip"
   resource_group   = "${module.resource_group.resource_group_name}"
+}
+
+module "vm" {
+  source               = "../../modules/vm"
+  location             = "${var.location}"
+  application_type     = "${var.application_type}"
+  resource_type        = "VM"
+  resource_group       = "${module.resource_group.resource_group_name}"
+  subnet_id            = "${module.network.subnet_id_test}"
+  public_ip_address_id = "${module.publicip.public_ip_address_id}"
 }

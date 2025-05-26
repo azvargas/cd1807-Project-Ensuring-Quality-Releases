@@ -13,4 +13,4 @@ variable "application_type" {}
 variable virtual_network_name {}
 variable address_prefix_test {}
 variable address_space {}
-
+variable address_prefix_for_nsg {}
