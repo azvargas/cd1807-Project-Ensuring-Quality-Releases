@@ -8,13 +8,12 @@ provider "azurerm" {
 
 terraform {
   backend "azurerm" {
-    use_oidc                         = true
-    oidc_azure_service_connection_id = "5a89ef70-22ee-42d8-9103-6aafe9b1e6ec"
-    use_azuread_auth                 = true
-    tenant_id                        = "84e1d1c4-fa62-418b-8f22-c3104cbf50f0"
-    storage_account_name             = "tfstate45611955"
-    container_name                   = "tfstate"
-    key                              = "test.terraform.tfstate"
+    use_oidc             = true
+    use_azuread_auth     = true
+    tenant_id            = "84e1d1c4-fa62-418b-8f22-c3104cbf50f0"
+    storage_account_name = "tfstate45611955"
+    container_name       = "tfstate"
+    key                  = "test.terraform.tfstate"
   }
 }
 
