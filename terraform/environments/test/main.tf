@@ -1,9 +1,7 @@
 provider "azurerm" {
-  tenant_id       = "${var.tenant_id}"
-  subscription_id = "${var.subscription_id}"
-  client_id       = "${var.client_id}"
-  client_secret   = "${var.client_secret}"
   features {}
+  subscription_id                    = "${var.subscription_id}"
+  ado_pipeline_service_connection_id = "5a89ef70-22ee-42d8-9103-6aafe9b1e6ec"
 }
 
 terraform {
