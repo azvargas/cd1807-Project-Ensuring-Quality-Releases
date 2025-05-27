@@ -25,36 +25,35 @@ stages:
   - job: BuildInfrastructure
     steps:
     # Install Terraform on the pipeline agent 
-    - task: TerraformInstaller@0
-      displayName: 'Terrafom installation'
-      inputs:
-        terraformVersion: '1.12.1'
     
-    # Run Terraform Init on the pipeline agent 
-    # ToDo: Replace the resource group name, storage account name, and container name below
-    - task: TerraformTaskV3@3
-      displayName: 'Terrafom init'
+    - task: TerraformInstaller@1
+      displayName: 'Terraform installation'
+      inputs:
+        terraformVersion: 'latest'
+
+    # Run Terraform init
+    - task: TerraformTask@5
+      displayName: 'Terraform init'
       inputs:
         provider: 'azurerm'
         command: 'init'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-        backendServiceArm: 'Azure Udacity'
+        backendAzureRmUseEntraIdForAuthentication: false
+        backendServiceArm: '$(azureServiceConnectionId)'
         backendAzureRmResourceGroupName: 'Azuredevops'
         backendAzureRmStorageAccountName: 'tfstate45611955'
         backendAzureRmContainerName: 'tfstate'
         backendAzureRmKey: 'test.terraform.tfstate'
 
     # Run Terraform Validate    
-    - task: TerraformTaskV3@3
+    - task: TerraformTask@5
       displayName: Terraform validate
       inputs:
         provider: 'azurerm'
         command: 'validate'
-
     
     # Run Terraform Apply
-    # ToDo: Change the workingDirectory path, as applicable to you
-    - task: TerraformTaskV3@3
+    - task: TerraformTask@5
       displayName: Terraform apply
       inputs:
         provider: 'azurerm'
@@ -64,10 +63,10 @@ stages:
 
     # Destroy the resources in Azure
     # ToDo: Change the workingDirectory path, as applicable to you
-    - task: TerraformTaskV3@3
+    - task: TerraformTask@5
       displayName: Terraform destroy
       inputs:
         provider: 'azurerm'
         command: 'destroy'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'        
+        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
