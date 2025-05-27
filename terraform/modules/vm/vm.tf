@@ -7,11 +7,6 @@ data "azurerm_shared_image" "test" {
   name                = "LinuxTestVM"
   gallery_name        = data.azurerm_shared_image_gallery.test.name
   resource_group_name = "${var.resource_group}"
-  identifier {
-    publisher = "canonical"
-    offer     = "ubuntu-24_04-lts"
-    sku       = "server"
-  }
 }
 
 resource "azurerm_network_interface" "test" {
