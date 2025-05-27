@@ -1,14 +1,12 @@
 data "azurerm_shared_image_gallery" "test" {
   name                = "TestVMsGallery"
   resource_group_name = "${var.resource_group}"
-  location            = "${var.location}"
 }
 
 data "azurerm_shared_image" "test" {
   name                = "LinuxTestVM"
   gallery_name        = azurerm_shared_image_gallery.test.name
   resource_group_name = "${var.resource_group}"
-  location            = "${var.location}"
   os_type             = "Linux"
   identifier {
     publisher = "canonical"
