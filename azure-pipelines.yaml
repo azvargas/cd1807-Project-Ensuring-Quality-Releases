@@ -74,11 +74,11 @@ stages:
     displayName: Test Fake Rest API
     steps:
       # Install Newman
-      - task: CmdLine@2
-        displayName: Install Newman
-        inputs:
-          script: 'sudo npm install newman'
-          workingDirectory: $(System.DefaultWorkingDirectory)
+      # - task: CmdLine@2
+      #   displayName: Install Newman
+      #   inputs:
+      #     script: 'sudo npm install newman'
+      #     workingDirectory: $(System.DefaultWorkingDirectory)
 
       # Postman Data Validation Test Suite    
       - task: CmdLine@2
