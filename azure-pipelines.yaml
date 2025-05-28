@@ -85,7 +85,7 @@ stages:
         displayName: Run Data Validation Tests
         continueOnError: true
         inputs:
-          script: 'newman run TestSuite.Data-Validation.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
+          script: 'newman run TestSuite.Data-Validation.json -e Test.Environment.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
           workingDirectory: '$(projectRoot)/automatedtesting/postman'
 
       # Postman Regression Test Suite    
@@ -93,7 +93,7 @@ stages:
         displayName: Run Regression Tests
         continueOnError: true
         inputs:
-          script: 'newman run TestSuite.Regression.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
+          script: 'newman run TestSuite.Regression.json -e Test.Environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
           workingDirectory: '$(projectRoot)/automatedtesting/postman'
           
       # Postman - Publish Results 
