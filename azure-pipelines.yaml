@@ -86,7 +86,7 @@ stages:
         continueOnError: true
         inputs:
           script: 'newman run TestSuite.Data-Validation.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+          workingDirectory: '$(projectRoot)/automatedtesting/postman'
 
       # Postman Regression Test Suite    
       - task: CmdLine@2
@@ -94,13 +94,13 @@ stages:
         continueOnError: true
         inputs:
           script: 'newman run TestSuite.Regression.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+          workingDirectory: '$(projectRoot)/automatedtesting/postman'
           
       # Postman - Publish Results 
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/TEST-*.xml'
-          searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+          searchFolder: '$(projectRoot)/automatedtesting/postman'
           mergeTestResults: true
           testRunTitle: Regresion and Data Validation Tests
