@@ -14,7 +14,7 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Successful response\", function () {",
-							"    pm.response.to.be.oneOf([200,201,202]);",
+							"    pm.response.to.have.status(200);",
 							"});",
 							"var json = pm.response.json();",
 							"pm.environment.set(\"id\", json.id);"
