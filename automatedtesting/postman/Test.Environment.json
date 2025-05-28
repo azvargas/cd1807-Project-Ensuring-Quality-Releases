@@ -1,0 +1,27 @@
+{
+	"id": "9e160e26-9666-49f5-9bd1-7d5cd5c8988f",
+	"name": "Test.Environment",
+	"values": [
+		{
+			"key": "firstName",
+			"value": "Mark",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "lastName",
+			"value": "Twain",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "id",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2025-05-28T02:26:25.458Z",
+	"_postman_exported_using": "Postman/11.46.6-250523-1629"
+}
