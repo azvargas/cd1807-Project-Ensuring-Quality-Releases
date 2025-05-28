@@ -22,51 +22,85 @@ variables:
 stages:
 - stage: Build
   jobs:
-  - job: BuildInfrastructure
+#  - job: BuildInfrastructure
+#    steps:
+#    # Install Terraform on the pipeline agent 
+#    
+#    - task: TerraformInstaller@1
+#      displayName: 'Terraform installation'
+#      inputs:
+#        terraformVersion: 'latest'
+#
+#    # Run Terraform init
+#    - task: TerraformTask@5
+#      displayName: 'Terraform init'
+#      inputs:
+#        provider: 'azurerm'
+#        command: 'init'
+#        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
+#        backendAzureRmUseEntraIdForAuthentication: false
+#        backendServiceArm: '$(azureServiceConnectionId)'
+#        backendAzureRmResourceGroupName: 'Azuredevops'
+#        backendAzureRmStorageAccountName: 'tfstate45611955'
+#        backendAzureRmContainerName: 'tfstate'
+#        backendAzureRmKey: 'test.terraform.tfstate'
+#
+#    # Run Terraform Validate    
+#    - task: TerraformTask@5
+#      displayName: Terraform validate
+#      inputs:
+#        provider: 'azurerm'
+#        command: 'validate'
+#    
+#    # Run Terraform Apply
+#    - task: TerraformTask@5
+#      displayName: Terraform apply
+#      inputs:
+#        provider: 'azurerm'
+#        command: 'apply'
+#        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
+#        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
+#
+#    # Destroy the resources in Azure
+#    # ToDo: Change the workingDirectory path, as applicable to you
+#    - task: TerraformTask@5
+#      displayName: Terraform destroy
+#      inputs:
+#        provider: 'azurerm'
+#        command: 'destroy'
+#        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
+#        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
+  - job: TestFakeRestAPI
+    displayName: Test Fake Rest API
     steps:
-    # Install Terraform on the pipeline agent 
-    
-    - task: TerraformInstaller@1
-      displayName: 'Terraform installation'
-      inputs:
-        terraformVersion: 'latest'
+      # Install Newman
+      - task: CmdLine@2
+        displayName: Install Newman
+        inputs:
+          script: 'sudo npm install newman'
+          workingDirectory: $(System.DefaultWorkingDirectory)
 
-    # Run Terraform init
-    - task: TerraformTask@5
-      displayName: 'Terraform init'
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-        backendAzureRmUseEntraIdForAuthentication: false
-        backendServiceArm: '$(azureServiceConnectionId)'
-        backendAzureRmResourceGroupName: 'Azuredevops'
-        backendAzureRmStorageAccountName: 'tfstate45611955'
-        backendAzureRmContainerName: 'tfstate'
-        backendAzureRmKey: 'test.terraform.tfstate'
+      # Postman Data Validation Test Suite    
+      - task: CmdLine@2
+        displayName: Run Data Validation Tests
+        continueOnError: true
+        inputs:
+          script: 'newman run TestSuite.Data-Validation.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
 
-    # Run Terraform Validate    
-    - task: TerraformTask@5
-      displayName: Terraform validate
-      inputs:
-        provider: 'azurerm'
-        command: 'validate'
-    
-    # Run Terraform Apply
-    - task: TerraformTask@5
-      displayName: Terraform apply
-      inputs:
-        provider: 'azurerm'
-        command: 'apply'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
-
-    # Destroy the resources in Azure
-    # ToDo: Change the workingDirectory path, as applicable to you
-    - task: TerraformTask@5
-      displayName: Terraform destroy
-      inputs:
-        provider: 'azurerm'
-        command: 'destroy'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
+      # Postman Regression Test Suite    
+      - task: CmdLine@2
+        displayName: Run Regression Tests
+        continueOnError: true
+        inputs:
+          script: 'newman run TestSuite.Regression.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+          
+      # Postman - Publish Results 
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/TEST-*.xml'
+          searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+          mergeTestResults: true
+          testRunTitle: Regresion and Data Validation Tests
