@@ -25,3 +25,6 @@ override.tf.json
 terraform/environments/test/.terraform.lock.hcl
 terraform/environments/test/storage-account.txt
 terraform/environments/test/main.orig.tf
+
+# Python environments
+.venv
