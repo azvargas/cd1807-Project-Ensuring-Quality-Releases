@@ -77,32 +77,32 @@ stages:
     #--------------------------------------------#
     # Selenium (UI) Test Suite - Archive the package  
     # "ArchiveFiles@2" picks up the web package and archives it.
-    - task: ArchiveFiles@2
-      displayName: 'Archive UI Tests'
-      inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/selenium'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip'
+#    - task: ArchiveFiles@2
+#      displayName: 'Archive UI Tests'
+#      inputs:
+#        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/selenium'
+#        includeRootFolder: false
+#        archiveType: 'zip'
+#        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip'
     
-    # Selenium Test Suite - Publish the package  
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip   # Same as the archiveFile artifact above. 
-      displayName: 'Upload Package'
-      artifact: drop-uitests
+#    # Selenium Test Suite - Publish the package  
+#    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip   # Same as the archiveFile artifact above. 
+#      displayName: 'Upload Package'
+#      artifact: drop-uitests
 
     #--------------------------------------------#    
     # FakeRestAPI - Archive
     # ToDo: Complete the ArchiveFiles@2 task and publish step 
-    - task: ArchiveFiles@2
-      displayName: 'Archive FakeRestAPI'
-      inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/jmeter/fakerestapi'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
-      displayName: 'Upload Package'
-      artifact: drop-fakerestapi
+#    - task: ArchiveFiles@2
+#      displayName: 'Archive FakeRestAPI'
+#      inputs:
+#        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/jmeter/fakerestapi'
+#        includeRootFolder: false
+#        archiveType: 'zip'
+#        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
+#    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
+#      displayName: 'Upload Package'
+#      artifact: drop-fakerestapi
         
     #--------------------------------------------#  
     # JMeter (Performance) Test Suite - Archive
@@ -135,23 +135,24 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: AzureWebApp@1
-            displayName: 'Deploy Azure Web App'
-            inputs:
-              azureSubscription: 'Azure Udacity'
-              appType: 'webApp'
-              appName: 'azvProject4-AppService'
-              package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
-              deploymentMethod: 'auto'
+#          - task: AzureWebApp@1
+#            displayName: 'Deploy Azure Web App'
+#            inputs:
+#              azureSubscription: 'Azure Udacity'
+#              appType: 'webApp'
+#              appName: 'azvProject4-AppService'
+#              package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
+#              deploymentMethod: 'auto'
 
           #--------------------------------------------#
           # Run JMeter test suite against the App Service
           - task: CmdLine@2
+            displayName: Run JMeter test suite
             inputs:
               script: |
                 wget "https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.3.tgz"
                 tar -xf apache-jmeter-5.6.3.tgz
                 unzip -o $(Build.BuildId)-perftests.zip
-                ./apache-jmeter-5.2.1/bin/jmeter -n -t PerformanceTestSuite.jmx -j jmeter.log -f
+                ./apache-jmeter-5.6.3/bin/jmeter -n -t PerformanceTestSuite.jmx -j jmeter.log -f
                 cat jmeter.log
               workingDirectory: $(Pipeline.Workspace)/drop-perftests
