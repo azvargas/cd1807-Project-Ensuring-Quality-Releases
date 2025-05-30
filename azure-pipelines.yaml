@@ -28,45 +28,44 @@ stages:
   - job: BuildInfrastructure
     displayName: Build Infrastructure
     steps:
-    # Install Terraform on the pipeline agent 
    
-    - task: TerraformInstaller@1
-      displayName: 'Terraform installation'
-      inputs:
-        terraformVersion: 'latest'
+#    # Install Terraform on the pipeline agent 
+#    - task: TerraformInstaller@1
+#      displayName: 'Terraform installation'
+#      inputs:
+#        terraformVersion: 'latest'
 
-    # Run Terraform init
-    - task: TerraformTask@5
-      displayName: 'Terraform init'
-      inputs:
-        provider: 'azurerm'
-        command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-        backendAzureRmUseEntraIdForAuthentication: false
-        backendServiceArm: '$(azureServiceConnectionId)'
-        backendAzureRmResourceGroupName: 'Azuredevops'
-        backendAzureRmStorageAccountName: 'tfstate45611955'
-        backendAzureRmContainerName: 'tfstate'
-        backendAzureRmKey: 'test.terraform.tfstate'
+#    # Run Terraform init
+#    - task: TerraformTask@5
+#      displayName: 'Terraform init'
+#      inputs:
+#        provider: 'azurerm'
+#        command: 'init'
+#        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
+#        backendAzureRmUseEntraIdForAuthentication: false
+#        backendServiceArm: '$(azureServiceConnectionId)'
+#        backendAzureRmResourceGroupName: 'Azuredevops'
+#        backendAzureRmStorageAccountName: 'tfstate45611955'
+#        backendAzureRmContainerName: 'tfstate'
+#        backendAzureRmKey: 'test.terraform.tfstate'
 
-    # Run Terraform Validate    
-    - task: TerraformTask@5
-      displayName: Terraform validate
-      inputs:
-        provider: 'azurerm'
-        command: 'validate'
+#    # Run Terraform Validate    
+#    - task: TerraformTask@5
+#      displayName: Terraform validate
+#      inputs:
+#        provider: 'azurerm'
+#        command: 'validate'
    
-    # Run Terraform Apply
-    - task: TerraformTask@5
-      displayName: Terraform apply
-      inputs:
-        provider: 'azurerm'
-        command: 'apply'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
+#    # Run Terraform Apply
+#    - task: TerraformTask@5
+#      displayName: Terraform apply
+#      inputs:
+#        provider: 'azurerm'
+#        command: 'apply'
+#        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
+#        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
 
 #    # Destroy the resources in Azure
-#    # ToDo: Change the workingDirectory path, as applicable to you
 #    - task: TerraformTask@5
 #      displayName: Terraform destroy
 #      inputs:
@@ -101,9 +100,9 @@ stages:
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
-    #- publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
-    #  displayName: 'Upload Package'
-    #  artifact: drop-fakerestapi
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
+      displayName: 'Upload Package'
+      artifact: drop-fakerestapi
         
     #--------------------------------------------#  
     # JMeter (Performance) Test Suite - Archive
@@ -120,11 +119,38 @@ stages:
       displayName: 'Upload Package'
       artifact: drop-perftests
 
-    - task: AzureWebApp@1
-      displayName: 'Deploy Azure Web App'
-      inputs:
-        azureSubscription: 'Azure Udacity'
-        appType: 'webApp'
-        appName: 'azvProject4-AppService'
-        package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
-        deploymentMethod: 'auto'
+#--------------------------------------------#  
+# DEPLOYMENT STAGE
+#--------------------------------------------#    
+- stage: Deploy
+  jobs:
+  #--------------------------------------------#  
+  # Deploy FakeRestAPI Web App
+  # ToDo: Provide <environment name> you created in your DevOps project
+  - deployment: FakeRestAPI
+    pool: Default
+    environment: test
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            displayName: 'Deploy Azure Web App'
+            inputs:
+              azureSubscription: 'Azure Udacity'
+              appType: 'webApp'
+              appName: 'azvProject4-AppService'
+              package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
+              deploymentMethod: 'auto'
+
+          #--------------------------------------------#
+          # Run JMeter test suite against the App Service
+          - task: CmdLine@2
+            inputs:
+              script: |
+                wget "https://apache.mirrors.lucidnetworks.net//jmeter/binaries/apache-jmeter-5.2.1.tgz"
+                tar -xf apache-jmeter-5.2.1.tgz
+                unzip -o $(Build.BuildId)-perftests.zip
+                ./apache-jmeter-5.2.1/bin/jmeter -n -t PerformanceTestSuite.jmx -j jmeter.log -f
+                cat jmeter.log
+              workingDirectory: $(Pipeline.Workspace)/drop-perftests
