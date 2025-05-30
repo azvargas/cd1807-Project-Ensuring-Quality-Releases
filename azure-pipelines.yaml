@@ -26,6 +26,7 @@ stages:
 - stage: Build
   jobs:
   - job: BuildInfrastructure
+    displayName: Build Infrastructure
     steps:
     # Install Terraform on the pipeline agent 
    
@@ -102,6 +103,7 @@ stages:
           
       # Postman - Publish Results 
       - task: PublishTestResults@2
+        displayName: Publish test results
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: '**/TEST-*.xml'
