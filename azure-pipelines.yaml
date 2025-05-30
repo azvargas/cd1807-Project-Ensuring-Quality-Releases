@@ -20,47 +20,50 @@ variables:
   environmentName: 'test'
 
 stages:
+#--------------------------------------------#  
+# BUILD STAGE
+#--------------------------------------------#    
 - stage: Build
   jobs:
-#  - job: BuildInfrastructure
-#    steps:
-#    # Install Terraform on the pipeline agent 
-#    
-#    - task: TerraformInstaller@1
-#      displayName: 'Terraform installation'
-#      inputs:
-#        terraformVersion: 'latest'
-#
-#    # Run Terraform init
-#    - task: TerraformTask@5
-#      displayName: 'Terraform init'
-#      inputs:
-#        provider: 'azurerm'
-#        command: 'init'
-#        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-#        backendAzureRmUseEntraIdForAuthentication: false
-#        backendServiceArm: '$(azureServiceConnectionId)'
-#        backendAzureRmResourceGroupName: 'Azuredevops'
-#        backendAzureRmStorageAccountName: 'tfstate45611955'
-#        backendAzureRmContainerName: 'tfstate'
-#        backendAzureRmKey: 'test.terraform.tfstate'
-#
-#    # Run Terraform Validate    
-#    - task: TerraformTask@5
-#      displayName: Terraform validate
-#      inputs:
-#        provider: 'azurerm'
-#        command: 'validate'
-#    
-#    # Run Terraform Apply
-#    - task: TerraformTask@5
-#      displayName: Terraform apply
-#      inputs:
-#        provider: 'azurerm'
-#        command: 'apply'
-#        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-#        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
-#
+  - job: BuildInfrastructure
+    steps:
+    # Install Terraform on the pipeline agent 
+   
+    - task: TerraformInstaller@1
+      displayName: 'Terraform installation'
+      inputs:
+        terraformVersion: 'latest'
+
+    # Run Terraform init
+    - task: TerraformTask@5
+      displayName: 'Terraform init'
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
+        backendAzureRmUseEntraIdForAuthentication: false
+        backendServiceArm: '$(azureServiceConnectionId)'
+        backendAzureRmResourceGroupName: 'Azuredevops'
+        backendAzureRmStorageAccountName: 'tfstate45611955'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'test.terraform.tfstate'
+
+    # Run Terraform Validate    
+    - task: TerraformTask@5
+      displayName: Terraform validate
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+   
+    # Run Terraform Apply
+    - task: TerraformTask@5
+      displayName: Terraform apply
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
+        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
+
 #    # Destroy the resources in Azure
 #    # ToDo: Change the workingDirectory path, as applicable to you
 #    - task: TerraformTask@5
@@ -70,6 +73,7 @@ stages:
 #        command: 'destroy'
 #        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
 #        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
+
   - job: TestFakeRestAPI
     displayName: Test Fake Rest API
     steps:
@@ -152,3 +156,27 @@ stages:
       - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
         displayName: 'Upload Package'
         artifact: drop-perftests
+
+#--------------------------------------------#  
+# DEPLOYMENT STAGE
+#--------------------------------------------#    
+- stage: Deploy
+  jobs:
+  #--------------------------------------------#  
+  # Deploy FakeRestAPI Web App
+  - deployment: FakeRestAPI
+    pool:
+      vmImage: 'Ubuntu-18.04'      
+    environment: test
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            displayName: 'Deploy Azure Web App'
+            inputs:
+              azureSubscription: 'Azure Udacity'
+              appType: 'webApp'
+              appName: 'azvProject4-AppService'
+              package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
+              deploymentMethod: 'auto'
