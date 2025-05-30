@@ -28,3 +28,5 @@ terraform/environments/test/main.orig.tf
 
 # Python environments
 .venv
+keys/id_rsa
+keys/id_rsa.pub
