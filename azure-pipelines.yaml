@@ -56,6 +56,25 @@ stages:
         provider: 'azurerm'
         command: 'validate'
    
+    # Install SSH key
+    - task: InstallSSHKey@0
+      inputs:
+        knownHostsEntry: 'udacityadmin@1.1.1.1'
+        sshKeySecureFile: 'id_rsa'
+
+    # Download public key
+    - task: DownloadSecureFile@1
+      name: publicKey
+      inputs:
+        secureFile: 'id_rsa.pub'
+
+    # Copy public key to terraform folder
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(publicKey.secureFilePath)'
+        Contents: '**'
+        TargetFolder: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
+
     # Run Terraform Apply
     - task: TerraformTask@5
       displayName: Terraform apply
