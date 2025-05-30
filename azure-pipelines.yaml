@@ -74,7 +74,36 @@ stages:
 #        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
 #        environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
 
-    #--------------------------------------------#
+    #--------------------------------------------#    
+    # Postman Data Validation Test Suite    
+    # ToDo: Verify the working directory
+    - task: CmdLine@2
+      displayName: Run Data Validation Tests
+      continueOnError: true
+      inputs:
+        script: 'newman run TestSuite.Data-Validation.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+
+    # Postman Regression Test Suite    
+    # ToDo: Verify the working directory
+    - task: CmdLine@2
+      displayName: Run Regression Tests
+      continueOnError: true
+      inputs:
+        script: 'newman run TestSuite.Regression.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+
+    # Postman - Publish Results 
+    # ToDo: Complete the task as explained here: https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/test/publish-test-results?view=azure-devops&tabs=trx%2Cyaml#yaml-snippet
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/TEST-*.xml'
+        searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+        mergeTestResults: true
+        testRunTitle: Validation and Regression Tests
+
+        #--------------------------------------------#
     # Selenium (UI) Test Suite - Archive the package  
     # "ArchiveFiles@2" picks up the web package and archives it.
 #    - task: ArchiveFiles@2
