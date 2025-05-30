@@ -183,5 +183,6 @@ stages:
                 tar -xf apache-jmeter-5.6.3.tgz
                 unzip -o $(Build.BuildId)-perftests.zip
                 ./apache-jmeter-5.6.3/bin/jmeter -n -t PerformanceTestSuite.jmx -j jmeter.log -f
-                cat jmeter.log
+                cat results_stress.csv
+                cat results_endurance.csv
               workingDirectory: $(Pipeline.Workspace)/drop-perftests
