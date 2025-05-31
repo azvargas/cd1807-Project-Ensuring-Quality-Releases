@@ -65,12 +65,14 @@ stages:
 
     # Download public key
     - task: DownloadSecureFile@1
+      displayName: Download Public Key
       name: publicKey
       inputs:
         secureFile: 'id_rsa.pub'
 
     # Copy public key to terraform folder
     - task: CopyFiles@2
+      displayName: Copy Public Key
       inputs:
         SourceFolder: '$(Agent.TempDirectory)'
         Contents: 'id_rsa.pub'
