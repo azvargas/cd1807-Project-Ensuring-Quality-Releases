@@ -235,7 +235,7 @@ stages:
                 sudo apt-get install python3-pip -y
                 sudo apt-get install unzip -y
                 sudo apt-get install -y chromium-browser
-                sudo apt-get install python3-selenium
+                sudo apt-get install -y python3-selenium
                 cd ~/
                 DIR=/home/azureuser/app
                 if [ ! -d "$DIR" ]; then
