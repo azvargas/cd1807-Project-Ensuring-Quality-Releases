@@ -58,6 +58,7 @@ stages:
    
     # Install SSH key
     - task: InstallSSHKey@0
+      displayName: Install SSH key
       inputs:
         knownHostsEntry: 'udacityadmin@1.1.1.1'
         sshKeySecureFile: 'id_rsa'
@@ -71,8 +72,8 @@ stages:
     # Copy public key to terraform folder
     - task: CopyFiles@2
       inputs:
-        SourceFolder: '$(publicKey.secureFilePath)'
-        Contents: '**'
+        SourceFolder: '$(Agent.TempDirectory)'
+        Contents: 'id_rsa.pub'
         TargetFolder: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
 
     # Run Terraform Apply
