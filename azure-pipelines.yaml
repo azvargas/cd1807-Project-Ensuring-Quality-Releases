@@ -231,8 +231,13 @@ stages:
                 sudo apt-get install unzip -y
                 echo "============       Install Chromium      ============"
                 sudo apt-get install -y chromium-browser
-                echo "============       Install Chromedriver  ============"
+                echo "============     Install Chromedriver    ============"
                 sudo apt-get install -y chromium-chromedriver
+                echo "============     Install dbus-user       ============"
+                sudo apt install dbus-user-session 
+                systemctl --user start dbus.service
+                DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+                export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
                 cd ~/
                 DIR=/home/azureuser/app
                 if [ ! -d "$DIR" ]; then
