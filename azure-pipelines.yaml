@@ -240,6 +240,8 @@ stages:
                 sudo apt-get install unzip -y
                 echo "============       Install Chromium      ============"
                 sudo apt-get install -y chromium-browser
+                echo "============       Install Chromedriver  ============"
+                sudo apt-get install -y chromium-chromedriver
                 cd ~/
                 DIR=/home/azureuser/app
                 if [ ! -d "$DIR" ]; then
@@ -249,15 +251,6 @@ stages:
                 mv /home/azureuser/azagent/_work/1/drop-uitests/$(Build.BuildId)-uitests.zip app
                 cd app
                 unzip -o $(Build.BuildId)-uitests.zip
-                FILE=/home/azureuser/app/chromedriver_linux64.zip
-                echo "============ Get chromedriver if not exists. ============"
-                if [ ! -f "$FILE" ]; then
-                    LATEST=$(wget -q -O - http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
-                    wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
-                    unzip -o chromedriver_linux64.zip
-                    sudo ln -s $PWD/chromedriver /usr/local/bin/chromedriver
-                fi
-                export PATH=$PATH:/home/azureuser/app
                 echo "============      Install Selenium.      ============"
                 python3 -m venv .venv
                 source .venv/bin/activate
