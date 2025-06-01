@@ -78,8 +78,8 @@ def remove_items_from_cart(driver):
 
 logger = logging.getLogger('selenium')
 logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler()
-logger.addHandler(handler)
+fileHandler = logging.FileHandler('/home/azureuser/system.log')
+logger.addHandler(fileHandler)
 
 driver = login('standard_user', 'secret_sauce')
 add_items_to_cart(driver)

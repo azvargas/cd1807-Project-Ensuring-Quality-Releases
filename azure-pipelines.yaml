@@ -244,6 +244,7 @@ stages:
                 python3 add_remove_from_cart.py >> selenium.log
                 echo "*** Completed Selenium Tests. Check selenium.log for results. ***"
                 cat selenium.log
+                cat /home/azureuser/system.log
 
           # Destroy the resources in Azure. It doesn't work at this place of the pipeline
           #- task: TerraformTask@5
