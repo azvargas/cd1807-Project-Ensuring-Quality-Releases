@@ -221,12 +221,8 @@ stages:
               script: |           
                 #! /bin/bash
                 
-                echo "============ Add repository and upgrade. ============"
+                echo "============   Add universe repository   ============"
                 sudo add-apt-repository universe -y
-                sudo apt-get upgrade -y
-                echo "============  Install Python PIP & VENV  ============"
-                sudo apt-get install python3-pip -y
-                sudo apt-get install python3.12-venv -y
                 echo "============       Install Unzip         ============"
                 sudo apt-get install unzip -y
                 echo "============       Install Chromium      ============"
