@@ -16,7 +16,8 @@ def login (user, password):
     prefs = {"credentials_enable_service": False,
         "profile.password_manager_enabled": False}
     options.add_experimental_option("prefs", prefs)
-    driver = webdriver.Chrome(options=options)
+    service = webdriver.ChromeService(executable_path='/usr/bin/chromedriver')
+    driver = webdriver.Chrome(service=service, options=options)
     print ('Browser started successfully. Navigating to the demo page to login.')
     driver.get('https://www.saucedemo.com/')
     print (f'Attempting to login into the store with the user {user}.')

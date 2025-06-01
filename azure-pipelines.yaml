@@ -233,11 +233,8 @@ stages:
                 sudo apt-get install -y chromium-browser
                 echo "============     Install Chromedriver    ============"
                 sudo apt-get install -y chromium-chromedriver
-                echo "============     Install dbus-user       ============"
-                sudo apt install dbus-user-session 
-                systemctl --user start dbus.service
-                DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
-                export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+                echo "============       Install Selenium      ============"
+                sudo apt-get install -y python3-selenium
                 cd ~/
                 DIR=/home/azureuser/app
                 if [ ! -d "$DIR" ]; then
@@ -247,10 +244,6 @@ stages:
                 mv /home/azureuser/azagent/_work/1/drop-uitests/$(Build.BuildId)-uitests.zip app
                 cd app
                 unzip -o $(Build.BuildId)-uitests.zip
-                echo "============      Install Selenium.      ============"
-                python3 -m venv .venv
-                source .venv/bin/activate
-                pip install selenium
                 echo "============      Starting Selenium Tests     ============"
                 python3 add_remove_from_cart.py >> selenium.log
                 echo "*** Completed Selenium Tests. Check selenium.log for results. ***"
