@@ -89,36 +89,32 @@ stages:
 
     #--------------------------------------------#    
     # Postman Data Validation Test Suite    
-    # ToDo: Verify the working directory
-#    - task: CmdLine@2
-#      displayName: Run Data Validation Tests
-#      continueOnError: true
-#      inputs:
-#        script: 'newman run TestSuite.Data-Validation.json -e Test.Environment.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
-#        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+    - task: CmdLine@2
+      displayName: Run Data Validation Tests
+      continueOnError: true
+      inputs:
+        script: 'newman run TestSuite.Data-Validation.json -e Test.Environment.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
 
     # Postman Regression Test Suite    
-    # ToDo: Verify the working directory
-#    - task: CmdLine@2
-#      displayName: Run Regression Tests
-#      continueOnError: true
-#      inputs:
-#        script: 'newman run TestSuite.Regression.json -e Test.Environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
-#        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+    - task: CmdLine@2
+      displayName: Run Regression Tests
+      continueOnError: true
+      inputs:
+        script: 'newman run TestSuite.Regression.json -e Test.Environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
 
     # Postman - Publish Results 
-    # ToDo: Complete the task as explained here: https://learn.microsoft.com/en-us/azure/devops/pipelines/tasks/test/publish-test-results?view=azure-devops&tabs=trx%2Cyaml#yaml-snippet
-#    - task: PublishTestResults@2
-#      inputs:
-#        testResultsFormat: 'JUnit'
-#        testResultsFiles: '**/TEST-*.xml'
-#        searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
-#        mergeTestResults: true
-#        testRunTitle: Validation and Regression Tests
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/TEST-*.xml'
+        searchFolder: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+        mergeTestResults: true
+        testRunTitle: Validation and Regression Tests
 
         #--------------------------------------------#
     # Selenium (UI) Test Suite - Archive the package  
-    # "ArchiveFiles@2" picks up the web package and archives it.
     - task: ArchiveFiles@2
       displayName: 'Archive UI Tests'
       inputs:
@@ -129,37 +125,38 @@ stages:
     
     # Selenium Test Suite - Publish the package  
     - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip   # Same as the archiveFile artifact above. 
-      displayName: 'Upload Package'
+      displayName: 'Upload Selenium Test Package'
       artifact: drop-uitests
 
     #--------------------------------------------#    
     # FakeRestAPI - Archive
-    # ToDo: Complete the ArchiveFiles@2 task and publish step 
-#    - task: ArchiveFiles@2
-#      displayName: 'Archive FakeRestAPI'
-#      inputs:
-#        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/jmeter/fakerestapi'
-#        includeRootFolder: false
-#        archiveType: 'zip'
-#        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
-#    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
-#      displayName: 'Upload Package'
-#      artifact: drop-fakerestapi
+    - task: ArchiveFiles@2
+      displayName: 'Archive FakeRestAPI'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/jmeter/fakerestapi'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
+
+    # Fake Rest API: Publish the package
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
+      displayName: 'Upload Fake Rest API Package'
+      artifact: drop-fakerestapi
         
     #--------------------------------------------#  
     # JMeter (Performance) Test Suite - Archive
-    # ToDo: Complete the ArchiveFiles@2 task and publish step 
-#    - task: ArchiveFiles@2
-#      displayName: 'Archive PerformanceTestSuite'
-#      inputs:
-#        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/jmeter/'
-#        includeRootFolder: false
-#        archiveType: 'zip'
-#        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip'
-#    # JMeter Test Suite - Publish    
-#    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
-#      displayName: 'Upload Package'
-#      artifact: drop-perftests
+    - task: ArchiveFiles@2
+      displayName: 'Archive PerformanceTestSuite'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/jmeter/'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip'
+
+    # JMeter Test Suite - Publish    
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
+      displayName: 'Upload JMeter Test Suite Package'
+      artifact: drop-perftests
 
 #--------------------------------------------#  
 # DEPLOYMENT STAGE
@@ -168,44 +165,43 @@ stages:
   jobs:
   #--------------------------------------------#  
   # Deploy FakeRestAPI Web App
-#  - deployment: FakeRestAPI
-#    displayName: Fake REST API
-#    pool: Default
-#    environment: test
-#    strategy:
-#      runOnce:
-#        deploy:
-#          steps:
-#          - task: AzureWebApp@1
-#            displayName: 'Deploy Azure Web App'
-#            inputs:
-#              azureSubscription: 'Azure Udacity'
-#              appType: 'webApp'
-#              appName: 'azvProject4-AppService'
-#              package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
-#              deploymentMethod: 'auto'
-#
-#          #--------------------------------------------#
-#          # Run JMeter test suite against the App Service
-#          - task: CmdLine@2
-#            displayName: Run JMeter test suite
-#            inputs:
-#              script: |
-#                wget "https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.3.tgz"
-#                tar -xf apache-jmeter-5.6.3.tgz
-#                unzip -o $(Build.BuildId)-perftests.zip
-#                ./apache-jmeter-5.6.3/bin/jmeter -n -t PerformanceTestSuite.jmx -j jmeter.log -f
-#                cat results_stress.csv
-#                cat results_endurance.csv
-#              workingDirectory: $(Pipeline.Workspace)/drop-perftests
+  - deployment: FakeRestAPI
+    displayName: Fake REST API
+    pool: Default
+    environment: $(environmentName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            displayName: 'Deploy Azure Web App'
+            inputs:
+              azureSubscription: 'Azure Udacity'
+              appType: 'webApp'
+              appName: 'azvProject4-AppService'
+              package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
+              deploymentMethod: 'auto'
+
+          #--------------------------------------------#
+          # Run JMeter test suite against the App Service
+          - task: CmdLine@2
+            displayName: Run JMeter test suite
+            inputs:
+              script: |
+                wget "https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.3.tgz"
+                tar -xf apache-jmeter-5.6.3.tgz
+                unzip -o $(Build.BuildId)-perftests.zip
+                ./apache-jmeter-5.6.3/bin/jmeter -n -t PerformanceTestSuite.jmx -j jmeter.log -f
+                cat results_stress.csv
+                cat results_endurance.csv
+              workingDirectory: $(Pipeline.Workspace)/drop-perftests
   
   #--------------------------------------------#  
   # Selenium | Functional UI Tests
-  # ToDo: 
   - deployment: VMDeploy
     displayName: Selenium Tests
     environment:
-      name: test
+      name: $(environmentName)
       resourceType: VirtualMachine
       tags: selenium
     strategy:
