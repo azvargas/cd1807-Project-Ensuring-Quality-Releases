@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.by import By
 import time
+import logging
 
 # Start the browser and login with standard_user
 def login (user, password):
@@ -16,8 +17,9 @@ def login (user, password):
     prefs = {"credentials_enable_service": False,
         "profile.password_manager_enabled": False}
     options.add_experimental_option("prefs", prefs)
-    service = webdriver.ChromeService(executable_path='/usr/bin/chromedriver')
-    driver = webdriver.Chrome(service=service, options=options)
+    # service = webdriver.ChromeService(executable_path='/usr/bin/chromedriver')
+    # driver = webdriver.Chrome(service=service, options=options)
+    driver = webdriver.Chrome(options=options)
     print ('Browser started successfully. Navigating to the demo page to login.')
     driver.get('https://www.saucedemo.com/')
     print (f'Attempting to login into the store with the user {user}.')
@@ -73,6 +75,11 @@ def remove_items_from_cart(driver):
 
     print (f'Articles in cart: {cart_item_count}')
     assert cart_item_count == 0, 'Not all the articles were removed from the shopping cart'
+
+logger = logging.getLogger('selenium')
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+logger.addHandler(handler)
 
 driver = login('standard_user', 'secret_sauce')
 add_items_to_cart(driver)

@@ -250,11 +250,11 @@ stages:
                 cat selenium.log
 
           # Destroy the resources in Azure
-          #- task: TerraformTask@5
-          #  displayName: Terraform destroy
-          #  inputs:
-          #    provider: 'azurerm'
-          #    command: 'destroy'
-          #    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-          #    environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
+          - task: TerraformTask@5
+            displayName: Terraform destroy
+            inputs:
+              provider: 'azurerm'
+              command: 'destroy'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
+              environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
 
