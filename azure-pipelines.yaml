@@ -224,6 +224,8 @@ stages:
                 echo "============ Install Unzip ============"
                 sudo apt-get install unzip -y
                 echo "============ Install Python Utilities ============"
+                sudo add-apt-repository universe
+                sudo apt-get update
                 sudo apt install -y python3-pip
                 sudo apt install -y python3.12-venv
                 echo "============ Install Chrome ============"
