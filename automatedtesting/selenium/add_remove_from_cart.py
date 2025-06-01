@@ -14,6 +14,7 @@ def login (user, password):
     options.add_argument("--no-sandbox") 
     options.add_argument("--disable-popup-blocking") 
     options.add_argument("--disable-application-cache") 
+    options.add_argument("--guest") 
     prefs = {"credentials_enable_service": False,
         "profile.password_manager_enabled": False}
     options.add_experimental_option("prefs", prefs)
@@ -73,11 +74,6 @@ def remove_items_from_cart(driver):
 
     print (f'Articles in cart: {cart_item_count}')
     assert cart_item_count == 0, 'Not all the articles were removed from the shopping cart'
-
-logger = logging.getLogger('selenium')
-logger.setLevel(logging.DEBUG)
-fileHandler = logging.FileHandler('/home/azureuser/system.log')
-logger.addHandler(fileHandler)
 
 driver = login('standard_user', 'secret_sauce')
 add_items_to_cart(driver)
