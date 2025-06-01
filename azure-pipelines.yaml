@@ -245,12 +245,12 @@ stages:
                 echo "*** Completed Selenium Tests. Check selenium.log for results. ***"
                 cat selenium.log
 
-          # Destroy the resources in Azure
-          - task: TerraformTask@5
-            displayName: Terraform destroy
-            inputs:
-              provider: 'azurerm'
-              command: 'destroy'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
-              environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
+          # Destroy the resources in Azure. It doesn't work at this place of the pipeline
+          #- task: TerraformTask@5
+          #  displayName: Terraform destroy
+          #  inputs:
+          #    provider: 'azurerm'
+          #    command: 'destroy'
+          #    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform/environments/test'
+          #    environmentServiceNameAzureRM: '$(azureServiceConnectionId)'
 
