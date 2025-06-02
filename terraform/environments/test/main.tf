@@ -78,3 +78,11 @@ module "vm" {
   subnet_id            = "${module.network.subnet_id_test}"
   public_ip_address_id = "${module.publicip.public_ip_address_id}"
 }
+
+module "metric_alert" {
+  source = "../../modules/metric_alert"
+  application_type = "${var.application_type}"
+  resource_type = "Alert"
+  resource_group = "${module.resource_group.resource_group_name}"
+  webapp_id = "${module.appservice.app_service_id}"
+}
